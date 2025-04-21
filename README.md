@@ -2,15 +2,21 @@
 
 This repository provides a simple Python implementation for managing save files in a game or an application. The system supports creating, updating, retrieving, and deleting save files, while maintaining an index of save files in a directory. It uses JSON format for storing data and allows you to easily manage multiple saves for your application.
 
+Characteristics (I think so):
+ - Separate the JSON content from the index table to avoid loading everything and affecting the operation
+ - Call the add/delete archive method to automatically update the index table
+     - This means that additional renaming functions (by calling these methods) do not need to explicitly require updating the index table.
+ - Save can manage multiple archives, and the archive name can be placed in the content of the archive. The file name will be archived using time, which will avoid files with illegal characters in the name as file names, which is quite good
+
 ## Overview
 
 ### `Saves` Class
 - Handles multiple save files in a specified directory.
-- Maintains an index file (`list.json`) that keeps track of all save names and filenames.
+- Maintains an index file (list.json) that keeps track of all save names and filenames.
 - Provides functions to:
   - Get a list of all save names.
-  - Create a new save (if the name does not already exist).
-  - Delete a specific save.
+  - Create a new save (if the name does not already exist, automatically update index table).
+  - Delete a specific save(automatically update index table).
   - Update an existing save.
 
 ### `Save` Class
@@ -29,30 +35,31 @@ This repository provides a simple Python implementation for managing save files 
 ## Usage
 
 ### 1. Initialization
-To create a new save system, you can instantiate the `Saves` class, passing the directory path where you want to store the save files. Optionally, you can provide a custom file suffix (default is "json").
+To create a new save system, you can instantiate the Saves class, passing the directory path where you want to store the save files. Optionally, you can provide a custom file suffix (default is "json"，and it is essentially JSON).
+This will generate the corresponding directory and list. json in the current execution path
 
 ```python
-from your_module import Saves
+import Saves
 
-saves = Saves(folder_path="path_to_save_directory")
+saves = Saves("game_log")
 ```
 
 ### 2. Saving Data
-To create a new save, use the `sett()` method. This will create a new save file with a unique filename and store the provided parameters.
+To create a new save, use the sett() method. This will create a new save file with a unique filename and store the provided parameters.
 
 ```python
 saves.sett(save_name="Save1", parameter={"score": 100, "level": 5})
 ```
 
 ### 3. Deleting a Save
-To delete a specific save, use the `dele()` method. This will remove the save file and update the save list.
+To delete a specific save, use the dele() method. This will remove the save file and update the save list automatically.
 
 ```python
 saves.dele(save_name="Save1")
 ```
 
 ### 4. Retrieving a Save
-To get the contents of a specific save, use the `get()` method. This will load the data from the save file.
+To get the contents of a specific save, use the get() method. This will load the data from the save file.
 
 ```python
 save_data = saves.get(save_name="Save1")
@@ -60,14 +67,14 @@ print(save_data)
 ```
 
 ### 5. Updating a Save
-To update an existing save file, use the `update()` method.
+To update an existing save file, use the update() method.
 
 ```python
 saves.update(save_name="Save1", parameter={"score": 150, "level": 6})
 ```
 
 ### 6. Listing All Saves
-To get a list of all save names, use the `get_lists()` method.
+To get a list of all save names, use the get_lists() method.
 
 ```python
 save_names = saves.get_lists()
@@ -130,6 +137,8 @@ Make sure to handle these exceptions as necessary in your application.
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+
 
 ---
 
